@@ -9,7 +9,8 @@ const findById = (id) => tasks.find((t) => t.id === id);
 const getByStatus = (status) => tasks.filter((t) => t.status.includes(status));
 
 const getPaginated = (page, limit) => {
-  const offset = page * limit;
+  // const offset = page * limit;     // it has a bug 
+  const offset = (page - 1) * limit;   // it is the solution for above bugged code
   return tasks.slice(offset, offset + limit);
 };
 
@@ -76,6 +77,26 @@ const completeTask = (id) => {
   return updated;
 };
 
+const assign = (id, assignee) => {
+  const task = findById(id);
+
+  if (!task) return null;
+
+  if (task.assignee) {
+    return 'ALREADY_ASSIGNED';
+  }
+
+  const updated = {
+    ...task,
+    assignee,
+  };
+
+  const index = tasks.findIndex((t) => t.id === id);
+  tasks[index] = updated;
+
+  return updated;
+};
+
 const _reset = () => {
   tasks = [];
 };
@@ -90,5 +111,6 @@ module.exports = {
   update,
   remove,
   completeTask,
+  assign,
   _reset,
 };
